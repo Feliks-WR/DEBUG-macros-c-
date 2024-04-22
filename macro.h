@@ -5,26 +5,27 @@
 
 #ifdef NDEBUG
 
-#define LOG(...) ((void)0)
+#define LOG_DBG(...) ((void)0)
+#define ERR_DBG(...) ((void)0)
 
 #else // !defined(NDEBUG)
 
-#define LOG(msg, ...) ::NS::log(msg, __VA_ARGS__)
+#define LOG_DBG(fmt, ...) ::NS::write(stdout, fmt, __VA_ARGS__)
+#define ERR_DBG(fmt, ...) ::NS::write(stderr, fmt, __VA_ARGS__)
 
-#endif // NDEBUG
+#endif // !NDEBUG
+
+#include <iostream>
+#include <cstdarg>
 
 namespace NS {
-    static inline void log(const char* const str, auto args)
+    static inline void write(std::FILE* Stream, const char* const fmt, ...)
     {
-        std::clog << str;
-        std::clog << args;
+		va_list args;
+		va_start(args, fmt);
+        std::vfprintf(Stream, fmt, args);
         std::clog << std::endl;
-    }
-
-    static inline void log(auto str)
-    {
-        std::clog << str;
-        std::clog << std::endl;
+		va_end(args);
     }
 }
 
